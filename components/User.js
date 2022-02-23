@@ -7,62 +7,65 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel,
 } from 'react-native-simple-radio-button';
+import {useForm, Controller} from 'react-hook-form';
 
 function User() {
-  function handlesubmit() {
-    if (mailcheck && pwcheck) {
-      Alert.alert('Success');
-    } else {
-      Alert.alert('Incorrect mailId & Password');
-    }
-  }
-  const [radio, setradio] = useState([
-    {label: 'male', value: 0},
-    {label: 'female', value: 1},
-  ]);
-  const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
-  const [email, setemail] = useState('');
-  const [password, setpassword] = useState('');
-  const [mailcheck, setmailcheck] = useState(false);
-  const [pwcheck, setpwcheck] = useState(false);
-  function validate(text) {
-    var validator = require('email-validator');
-    validator.validate(text);
-    if (validator) {
-      setemail(text);
-      setmailcheck(true);
-      console.log('valid');
-    } else {
-      setemail(text);
-      console.log('invalid');
-    }
-  }
-  function passwordvalidate(pw) {
-    var passwordValidator = require('password-validator');
-    var schema = new passwordValidator();
-    schema.is().min(8);
-    console.log(schema.validate(pw));
-    if (schema.validate(pw)) {
-      setpwcheck(true);
-    }
-  }
+  // React-Hook-Form
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      mail: '',
+      passwords: '',
+    },
+  });
+  const onSubmit = data => console.log(data);
+  //React-Hook-Form
+  
   return (
     <View style={styles.user}>
       <Text style={styles.header}>User</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="First Name"
-        placeholderTextColor="#fff"
-        underlineColorAndroid={'transparent'}
+      {/* React-Hook-Form */}
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="Firstname"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="firstName"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Last Name"
-        placeholderTextColor="#fff"
-        underlineColorAndroid={'transparent'}
+      {errors.firstName && <Text>This is required.</Text>}
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="Lastname"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="lastName"
       />
+      {errors.lastName && <Text>This is required.</Text>}
+      {/* React-Hook-Form */}
+      
       <View style={{display: 'flex'}}>
         <RadioForm
           radio_props={radio}
@@ -90,25 +93,46 @@ function User() {
           setOpen(false);
         }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#fff"
-        underlineColorAndroid={'transparent'}
-        value={email}
-        onBlur={text => validate(text)}
+      {/* React-Hook-Form */}
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+          pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="E-mail"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="mail"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        secureTextEntry={true}
-        onBlur={pw => passwordvalidate(pw)}
-        placeholderTextColor="#fff"
-        underlineColorAndroid={'transparent'}
+      {errors.mail && <Text>Invalid.</Text>}
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+          maxLength: 20,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="password"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="passwords"
       />
-
-      <Button title="Submit" onPress={() => handlesubmit()} />
+      {errors.passwords && <Text>Invalid.</Text>}
+      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+      {/* React-Hook-Form */}
+      
     </View>
   );
 }
