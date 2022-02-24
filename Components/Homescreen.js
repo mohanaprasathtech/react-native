@@ -11,18 +11,13 @@ function Homescreen() {
     {label: 'Tamil', value: 'tn'},
     {label: 'Italian', value: 'it'},
   ];
-  function changeLanguages(langcode) {
-    i18n.changeLanguage(langcode)
-    .then(() => console.log("language changed successfully"))
-      .catch(err => console.log("Error msg", err))
-  }
   return (
     <View>
       <SwitchSelector
         style={styles.container}
         options={options}
         initial={0}
-        onPress={(val)=>changeLanguages(val)}
+        onPress={(val)=>i18n.changeLanguage(val)}
       />
       <View>
         <Text style={styles.font}>{t('welcome')}</Text>
