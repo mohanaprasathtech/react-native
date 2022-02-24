@@ -7,8 +7,25 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel,
 } from 'react-native-simple-radio-button';
-
+import {useForm, Controller} from 'react-hook-form';
+import {Formik, Form, Field, ErrorMessage} from 'formik';
+import * as Yup from 'yup';
 function User() {
+  // React-Hook-Form
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      mail: '',
+      passwords: '',
+    },
+  });
+  const onSubmit = data => console.log(data);
+  //React-Hook-Form
   function handlesubmit() {
     if (mailcheck && pwcheck) {
       Alert.alert('Success');
@@ -47,11 +64,137 @@ function User() {
       setpwcheck(true);
     }
   }
+  var emailInput = null;
   return (
     <View style={styles.user}>
       <Text style={styles.header}>User</Text>
-
-      <TextInput
+      {/* Formik */}
+      <Formik
+        initialValues={{fname: '', lname: '', email: '', passwords: ''}}
+        validationSchema={Yup.object({
+          fname: Yup.string().required('Required'),
+          lname: Yup.string().required('Required'),
+          email: Yup.string().email('Invalid Email').required('Required'),
+          passwords: Yup.string().required('Required'),
+        })}
+        onSubmit={(values, formikActions) => {
+          setTimeout(() => {
+            Alert.alert(JSON.stringify(values));
+            formikActions.setSubmitting(false);
+          }, 500);
+        }}>
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+          isSubmitting,
+        }) => (
+          <View>
+            <TextInput
+              onChangeText={handleChange('fname')}
+              onBlur={handleBlur('fname')}
+              value={values.fname}
+              autoFocus
+              placeholder="Your first Name"
+              style={styles.input}
+              onSubmitEditing={() => {
+                emailInput.focus();
+              }}
+            />
+            {touched.fname && errors.fname ? (
+              <Text style={styles.error}>{errors.fname}</Text>
+            ) : null}
+            <TextInput
+              onChangeText={handleChange('lname')}
+              onBlur={handleBlur('lname')}
+              value={values.lname}
+              autoFocus
+              placeholder="Your last Name"
+              style={styles.input}
+              onSubmitEditing={() => {
+                emailInput.focus();
+              }}
+            />
+            {touched.lname && errors.lname ? (
+              <Text style={styles.error}>{errors.lname}</Text>
+            ) : null}
+            <TextInput
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              value={values.email}
+              placeholder="Email Address"
+              style={styles.input}
+              ref={el => (emailInput = el)}
+            />
+            {touched.email && errors.email ? (
+              <Text style={styles.error}>{errors.email}</Text>
+            ) : null}
+            <TextInput
+              onChangeText={handleChange('passwords')}
+              onBlur={handleBlur('passwords')}
+              value={values.passwords}
+              autoFocus
+              placeholder="password"
+              style={styles.input}
+              onSubmitEditing={() => {
+                emailInput.focus();
+              }}
+            />
+            {touched.passwords && errors.passwords ? (
+              <Text style={styles.error}>{errors.passwords}</Text>
+            ) : null}
+            <Button
+              onPress={handleSubmit}
+              color="black"
+              mode="contained"
+              loading={isSubmitting}
+              disabled={isSubmitting}
+              style={{marginTop: 16}}
+              title="submit"
+            />
+          </View>
+        )}
+      </Formik>
+      {/* React-Hook-Form */}
+      {/* <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="Firstname"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="firstName"
+      />
+      {errors.firstName && <Text>This is required.</Text>}
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="Lastname"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="lastName"
+      />
+      {errors.lastName && <Text>This is required.</Text>} */}
+      {/* React-Hook-Form */}
+      {/* <TextInput
         style={styles.input}
         placeholder="First Name"
         placeholderTextColor="#fff"
@@ -62,8 +205,8 @@ function User() {
         placeholder="Last Name"
         placeholderTextColor="#fff"
         underlineColorAndroid={'transparent'}
-      />
-      <View style={{display: 'flex'}}>
+      /> */}
+      {/* <View style={{display: 'flex'}}>
         <RadioForm
           radio_props={radio}
           initial={0}
@@ -89,26 +232,47 @@ function User() {
         onCancel={() => {
           setOpen(false);
         }}
+      /> */}
+      {/* React-Hook-Form */}
+      {/* <Controller
+        control={control}
+        rules={{
+          required: true,
+          pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="E-mail"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="mail"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#fff"
-        underlineColorAndroid={'transparent'}
-        value={email}
-        onBlur={text => validate(text)}
+      {errors.mail && <Text>Invalid.</Text>}
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+          maxLength: 20,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="password"
+            style={styles.input}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="passwords"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        secureTextEntry={true}
-        onBlur={pw => passwordvalidate(pw)}
-        placeholderTextColor="#fff"
-        underlineColorAndroid={'transparent'}
-      />
-
-      <Button title="Submit" onPress={() => handlesubmit()} />
+      {errors.passwords && <Text>Invalid.</Text>}
+      <Button title="Submit" onPress={handleSubmit(onSubmit)} /> */}
+      {/* React-Hook-Form */}
+      {/* <Button title="Submit" onPress={() => handlesubmit()} /> */}
     </View>
   );
 }
