@@ -1,24 +1,34 @@
 import React from 'react';
-
-import {StyleSheet, Text, useColorScheme, View} from 'react-native';
-import User from './components/User';
+import {StyleSheet, Text, View} from 'react-native';
+import Homescreen from './src/Homescreen';
+import Register from './src/Register';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native';
+import Viewuser from './src/Viewuser';
+const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-    <View style={styles.container}>
-      <User />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          options={{headerShown: true}}
+          name="Home"
+          component={Homescreen}
+        />
+        <Stack.Screen
+          options={{headerShown: true}}
+          name="Register"
+          component={Register}
+        />
+        <Stack.Screen
+          options={{headerShown: true}}
+          name="View"
+          component={Viewuser}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#344761',
-    flex: 1,
-    justifyContent: 'center',
-    paddingLeft: 60,
-    paddingRight: 60,
-  },
-});
-
+const styles = StyleSheet.create({});
 export default App;
